@@ -1,0 +1,27 @@
+0) cadastro admin
+
+1) autenticação
+    1.1)menu admin 
+        -cadastro usuario
+        -visualizar usuario
+        -remover usuario
+        -logoff
+        -sair
+    1.2)menu usuario
+		2)cadastrar clubes(novo)
+			-preenchimento manual
+			-preenchimento automatico 1/1
+			-preenchimento automatico total
+		2)continuar(velho)
+		-modificar dados
+		-configurações
+		-ranking
+		-logoff(salvar)
+		-sair(salvar)
+
+main.c
+cadastros.h
+menus.h
+rodada.h
+ranking.h
+shared.h(??????)
