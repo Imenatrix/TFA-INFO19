@@ -5,43 +5,51 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
-//<structinutil>
 typedef struct {
     int tipo;
     char nome[30];
     char login[12];
     char senha[12];
 } usuario;
-//</structinutil>
 
-int efetuarLogin(char* login, char* senha){
+char* efetuarLogin(char* login, char* senha){
     FILE *usuarios;
-    usuarios = fopen("usuarios.bin", "r");
+    usuarios = fopen("usuarios.bin", "rb");
 
     usuario coiso;
+    memset(&coiso, 0, sizeof(usuario));
 
-    while(fread(&coiso, sizeof(coiso), 1, usuarios) < 1){
-        fgets(fsenha, 12, usuarios);
-        fscanf(usuarios, "%*[^\n]\n");
-        fscanf(usuarios, "%*[^\n]\n");
-        if(!strncmp(flogin, login, strlen(flogin) - 1) && !strncmp(fsenha, senha, strlen(fsenha) - 1)){
-            return 1;
+    while(fread(&coiso, sizeof(usuario), 1, usuarios)){
+        if(!strcmp(coiso.login, login) && !strcmp(coiso.senha, senha)){
+            fclose(usuarios);
+            char *nome = malloc(sizeof(char*));
+            strcpy(nome, coiso.nome);
+            return nome;
         }
     }
 
-    fread
-
     fclose(usuarios);
-
-    return 0;
+    return NULL;
 }
 
 bool cadastrarUsuario(int tipo, char* nome, char* login, char* senha){
     FILE *usuarios;
-    usuarios = fopen("usuarios.bin", "a");
+    usuarios = fopen("usuarios.bin", "ab+");
 
     usuario coiso;
+    memset(&coiso, 0, sizeof(usuario));
+
+    while(fread(&coiso, sizeof(usuario), 1, usuarios)){
+        if(!strcmp(coiso.login, login)){
+            fclose(usuarios);
+            return false;
+        }
+    }
+
+    memset(&coiso, 0, sizeof(usuario));
+
     coiso.tipo = tipo;
     strcpy(coiso.nome, nome);
     strcpy(coiso.login, login);
@@ -56,20 +64,54 @@ bool cadastrarUsuario(int tipo, char* nome, char* login, char* senha){
 
 bool alterarUsuario(char* nome, char* login, char* senha){
     FILE *usuarios;
-    usuarios = fopen("usuarios.txt", "r+");
+    usuarios = fopen("usuarios.bin", "rb+");
 
-    char flogin[12];
+    usuario coiso;
+    memset(&coiso, 0, sizeof(usuario));
 
-    while(fgets(flogin, 12, usuarios) != NULL){
-
-        if(!strncmp(flogin, login, strlen(flogin) - 1)){
-
-            fputs(senha, usuarios);
-            fputc('\n', usuarios);
-            
+    while(fread(&coiso, sizeof(usuario), 1, usuarios)){
+        if(!strcmp(coiso.login, login)){
+            strcpy(coiso.nome, nome);
+            strcpy(coiso.senha, senha);
+            fseek(usuarios, -sizeof(usuario), SEEK_CUR);
+            fwrite(&coiso, sizeof(usuario), 1, usuarios);
+            fclose(usuarios);
+            return true;
         }
-        
     }
+    fclose(usuarios);
+    return false;
+}
+
+void removerUsuario(char* login){
+    FILE *usuarios = fopen("usuarios.bin", "rb+");
+
+    usuario coiso;
+    memset(&coiso, 0, sizeof(usuario));
+
+    fseek(usuarios, 0, SEEK_END);
+    int tam = ftell(usuarios) - sizeof(usuario);
+    fseek(usuarios, 0, SEEK_SET);
+
+    while(fread(&coiso, sizeof(usuario), 1, usuarios)){
+        if(!strcmp(coiso.login, login)){
+            if(ftell(usuarios) - sizeof(usuario) == tam){
+                ftruncate(fileno(usuarios), tam);
+            }
+            else{
+                int pos = ftell(usuarios) - sizeof(usuario);
+
+                fseek(usuarios, -sizeof(usuario), SEEK_END);
+                fread(&coiso, sizeof(usuario), 1, usuarios);
+
+                fseek(usuarios, pos, SEEK_SET);
+                fwrite(&coiso, sizeof(usuario), 1, usuarios);
+                ftruncate(fileno(usuarios), tam);
+                break;
+            }
+        }
+    }
+    fclose(usuarios);
 }
 
 #endif
