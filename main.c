@@ -1,25 +1,37 @@
-#include "services/menu.h"
-#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <unistd.h>
+#include <conio.h>
+#include "entities/usuario.h"
+#include "entities/jogo.h"
+#include "entities/clube.h"
+#include "entities/rodada.h"
+#include "entities/save.h"
+#include "services/tfatools.h"
+#include "services/usuarioCRUD.h"
+#include "services/saveCRUD.h"
+#include "services/subMenu.h"
+#include "services/menu.h"
 
 void main(){
 
     while(true){
         if(verificaAdmin()){
-            usuario *coiso;
+            usuario coiso;
             coiso = menuLogin();
-            if(coiso){
-                if(coiso->tipo){
-                    menuAdmin(*coiso);
+            if(coiso.tipo != -1){
+                if(coiso.tipo){
+                    menuAdmin(coiso);
                 }
                 else{
-                    menuUsuario(*coiso);
+                    menuUsuario(coiso);
                 }
             }
             else{
                 getch();
             }
-            free(coiso);
         }
         else{
             system("cls");
