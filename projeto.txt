@@ -25,3 +25,8 @@ menus.h
 rodada.h
 ranking.h
 shared.h(??????)
+
+//pra que o ranking?
+//times fixos na rodada ou manual?
+//por que não ja passar o usuario inteiro?
+// alterar credenciais não é igual configurações?
