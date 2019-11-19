@@ -3,12 +3,14 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <conio.h>
-#include "entities/usuario.h"
-#include "entities/jogo.h"
-#include "entities/clube.h"
-#include "entities/rodada.h"
-#include "entities/save.h"
+#include <stdio_ext.h>
+//#include <conio.h>
+#include "services/gea.h"
+#include "entities/Usuario.h"
+#include "entities/Jogo.h"
+#include "entities/Clube.h"
+#include "entities/Rodada.h"
+#include "entities/Save.h"
 #include "services/tfatools.h"
 #include "services/usuarioCRUD.h"
 #include "services/saveCRUD.h"
@@ -19,14 +21,14 @@ void main(){
 
     while(true){
         if(verificaAdmin()){
-            usuario coiso;
-            coiso = menuLogin();
-            if(coiso.tipo != -1){
-                if(coiso.tipo){
-                    menuAdmin(coiso);
+            Usuario usuario;
+            usuario = menuLogin();
+            if(usuario.tipo != -1){
+                if(usuario.tipo){
+                    menuAdmin(usuario);
                 }
                 else{
-                    menuUsuario(coiso);
+                    menuUsuario(usuario);
                 }
             }
             else{
@@ -34,7 +36,7 @@ void main(){
             }
         }
         else{
-            system("cls");
+            system("clear");
             menuCadastro(1);
             getch();
         }

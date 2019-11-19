@@ -4,7 +4,7 @@
 char *fgetstr(char *str, int n, FILE *stream)
 {
 	char *result;
-	fflush(stdin);
+	__fpurge(stdin);
 	result = fgets(str, n, stream);
 	if(!result){
 		return(result);

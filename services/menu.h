@@ -1,17 +1,17 @@
 #ifndef MENU_H
 #define MENU_H
 
-void menuUsuario(usuario coiso){
+void menuUsuario(Usuario usuario){
 
-    save _save;
+    Save save;
 
     int o;
 
     bool menu = true;
 
     while(menu){
-        system("cls");
-        printf("Seja bem-vindo, %s!\n", coiso.nome);
+        system("clear");
+        printf("Seja bem-vindo, %s!\n", usuario.nome);
         printf("1) Iniciar novo campeonato\n");
         printf("2) Continuar\n");
         printf("3) Modificar Dados de Autenticação\n");
@@ -22,37 +22,37 @@ void menuUsuario(usuario coiso){
 
         scanf("%i", &o);
 
-        system("cls");
+        //system("clear");
         switch(o){
             case 1:
-                memset(&_save, 0, sizeof(_save));
-                menuRodadas(&_save);
+                memset(&save, 0, sizeof(save));
+                menuRodadas(&save);
                 break;
 
             case 2:
-                _save = menuContinuar();
-                getch();
-                menuRodadas(&_save);
+                //save = menuContinuar();
+                save = listarSaves();
+                menuRodadas(&save);
                 break;
 
             case 3:
-                menuAlterarDados(coiso.login);
+                menuAlterarDados(usuario.login);
                 break;
 
             case 4:
-                menuSalvar(_save);
+                menuSalvar(&save);
                 break;
 
             case 5:
                 break;
 
             case 6:
-                //menuSalvar(_save);
+                //menuSalvar(save);
                 menu = false;
                 break;
 
             case 7:
-                //menuSalvar(_save);
+                //menuSalvar(save);
                 exit(1);
                 break;
 
@@ -66,7 +66,7 @@ void menuUsuario(usuario coiso){
     }
 }
 
-void menuAdmin(usuario coiso){
+void menuAdmin(Usuario usuario){
 
     int o;
 
@@ -75,8 +75,8 @@ void menuAdmin(usuario coiso){
 
     while(menu){
 
-        system("cls");
-        printf("Seja bem-vindo: %s\n", coiso.nome);
+        system("clear");
+        printf("Seja bem-vindo: %s\n", usuario.nome);
         printf("1) Cadastrar Usuário\n");
         printf("2) Visualizar Usuário\n");
         printf("3) Remover Usuário\n");
@@ -85,7 +85,7 @@ void menuAdmin(usuario coiso){
 
         scanf("%i", &o);
 
-        system("cls");
+        system("clear");
         switch(o){
             case 1:
                 menuCadastro(0);
@@ -97,7 +97,7 @@ void menuAdmin(usuario coiso){
 
             case 3:
                 login = menuRemover();
-                if(!strcmp(coiso.login, login)){
+                if(!strcmp(usuario.login, login)){
                    menu = false;
                 }
                 free(login);
@@ -121,22 +121,22 @@ void menuAdmin(usuario coiso){
     }
 }
 
-usuario menuLogin(){
+Usuario menuLogin(){
 
     char login[12];
     char senha[12];
 
-    usuario coiso;
+    Usuario usuario;
 
-    system("cls");
+    system("clear");
     printf("LOGIN: ");
     fgetstr(login, 12, stdin);
     printf("SENHA: ");
     fgetstr(senha, 12, stdin);
-    coiso = efetuarLogin(login, senha);
-    if(coiso.tipo == -1){
+    usuario = efetuarLogin(login, senha);
+    if(usuario.tipo == -1){
         printf("<CREDENCIAS INVÁLIDAS>\n");
     }
-    return coiso;
+    return usuario;
 }
 #endif

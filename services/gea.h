@@ -19,6 +19,7 @@ int getch(void) {
     newattr = oldattr;
     newattr.c_lflag &= ~( ICANON | ECHO);
     tcsetattr( STDIN_FILENO, TCSANOW, &newattr);
+    __fpurge(stdin);
     ch = getchar();
     tcsetattr( STDIN_FILENO, TCSANOW, &oldattr);
 

@@ -2,14 +2,15 @@
 #define SUBMENU_H
 
 void menuAlterarDados(char* login){
-    char nome[30];
-    char senha[12];
+    Usuario usuario;
+
+    strcpy(usuario.login, login);
 
     printf("NOVO NOME: ");
-    fgetstr(nome, 30, stdin);
+    fgetstr(usuario.nome, 30, stdin);
     printf("NOVA SENHA: ");
-    fgetstr(senha, 12, stdin);
-    if(alterarUsuario(nome, login, senha)){
+    fgetstr(usuario.senha, 12, stdin);
+    if(alterarUsuario(&usuario)){
         printf("<DADOS ALTERADOS COM SUCESSO>\n");
     }
     else{
@@ -19,7 +20,7 @@ void menuAlterarDados(char* login){
 
 void verUsuarios(){
 
-    usuario *lista = listarUsuarios();
+    Usuario *lista = listarUsuarios();
 
     for(int i = 0;lista[i].tipo != -1; i++){
         if(lista[i].tipo == 1){printf("<ADMIN>\n");}
@@ -34,9 +35,8 @@ void verUsuarios(){
 
 void menuCadastro(int tipo){
 
-    char nome[30];
-    char login[12];
-    char senha[12];
+    Usuario usuario;
+    usuario.tipo = tipo;
 
     if(tipo){
         printf("-CADASTRO DO ADMIN-\n");
@@ -45,13 +45,13 @@ void menuCadastro(int tipo){
         printf("-CADASTRO DO USUARIO-\n");
     }
     printf("NOME: ");
-    fgetstr(nome, 30, stdin);
+    fgetstr(usuario.nome, 30, stdin);
     printf("LOGIN: ");
-    fgetstr(login, 12, stdin);
+    fgetstr(usuario.login, 12, stdin);
     printf("SENHA: ");
-    fgetstr(senha, 12, stdin);
+    fgetstr(usuario.senha, 12, stdin);
 
-    if(cadastrarUsuario(tipo, nome, login, senha)){
+    if(cadastrarUsuario(&usuario)){
         printf("<CADASTRO REALIZADO COM SUCESSO>");
     }
     else{
@@ -76,12 +76,12 @@ char* menuRemover(){
     }
 }
 
-void menuRodadas(save* _save){
-    for(int i = _save->clubeIndex; i < 20; _save->clubeIndex = i++){
+void menuRodadas(Save* save){
+    for(int i = save->clubeIndex; i < 20; save->clubeIndex = i++){
 
-        clube _clube;
+        Clube clube;
         char buffer[30];
-        memset(&_clube, 0, sizeof(clube));
+        memset(&clube, 0, sizeof(Clube));
 
         printf("-CADASTRO DE CLUBE %i-\n", i + 1);
         printf("<DIGITE /sair PARA VOLTAR AO MENU INICIAL>\n");
@@ -89,48 +89,50 @@ void menuRodadas(save* _save){
         printf("NOME: \n");
         fgetstr(buffer, 30, stdin);
         if(!strcmp(buffer, "/sair")){return;}
-        strcpy(_clube.nome, buffer);
+        strcpy(clube.nome, buffer);
 
         printf("CIDADE: \n");
         fgetstr(buffer, 30, stdin);
         if(!strcmp(buffer, "/sair")){return;}
-        strcpy(_clube.nome, buffer);
+        strcpy(clube.nome, buffer);
 
         printf("ESTADIO: \n");
         fgetstr(buffer, 30, stdin);
         if(!strcmp(buffer, "/sair")){return;}
-        strcpy(_clube.nome, buffer);
+        strcpy(clube.nome, buffer);
 
-        _save->clubes[i] = _clube;
+        save->clubes[i] = clube;
     }
-    _save->clubeIndex++;
-    for(int i = _save->turnoIndex; i < 2; _save->turnoIndex = i++){
-        for(int j = _save->rodadaIndex; j < 19; _save->rodadaIndex = j++){
-            for(int k = _save->rodadas[i][j].jogoIndex; k < 10; _save->rodadas[i][j].jogoIndex = k++){
-                _save->rodadas[i][j].jogos[k];
+    save->clubeIndex++;
+    for(int i = save->turnoIndex; i < 2; save->turnoIndex = i++){
+        for(int j = save->rodadaIndex; j < 19; save->rodadaIndex = j++){
+            for(int k = save->rodadas[i][j].jogoIndex; k < 10; save->rodadas[i][j].jogoIndex = k++){
+                save->rodadas[i][j].jogos[k];
             }
         }
     }
-    _save->turnoIndex++;
+    save->turnoIndex++;
 }
 
-void menuSalvar(save _save){
+void menuSalvar(Save *save){
 
-    if(!strcmp(_save.nome, "")){
+    if(!strcmp(save->nome, "")){
         printf("NOME: ");
-        fgetstr(_save.nome, 30, stdin);
+        fgetstr(save->nome, 30, stdin);
     }
-    Salvar(_save);
+    Salvar(save);
 }
 
-save menuContinuar(){
-    save *saves = listarSaves();
-    for(int i = 0; saves[i].clubeIndex != -1; i++){
-        printf("%i) %s\n", i + 1, saves[i].nome);
-    }
-    int op;
-    scanf("%i", &op);
-    printf("<SAVE CARREGADO, APERTE (ENTER) PARA CONTINUAR>\n");
-    return saves[op - 1];
-}
+// Save menuContinuar(){
+//     //printf("asjdhkas");
+//     char** saves = listarSaves();
+//     for(int i = 0;  i < 1; i++){
+//         //sleep(10);
+//         printf("%i) %s\n", i + 1, saves[0]);
+//     }
+//     int op;
+//     scanf("%i", &op);
+//     printf("<Save CARREGADO, APERTE (ENTER) PARA CONTINUAR>\n");
+//     return resgatarSave(saves[op - 1]);
+// }
 #endif
