@@ -35,8 +35,7 @@ void verUsuarios(){
 
 void menuCadastro(int tipo){
 
-    Usuario usuario;
-    usuario.tipo = tipo;
+    Usuario usuario = newUsuario(tipo, "", "", "");
 
     if(tipo){
         printf("-CADASTRO DO ADMIN-\n");
@@ -88,18 +87,18 @@ void menuRodadas(Save* save){
 
         printf("NOME: \n");
         fgetstr(buffer, 30, stdin);
-        if(!strcmp(buffer, "/sair")){return;}
+        if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
         strcpy(clube.nome, buffer);
 
         printf("CIDADE: \n");
         fgetstr(buffer, 30, stdin);
-        if(!strcmp(buffer, "/sair")){return;}
-        strcpy(clube.nome, buffer);
+        if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
+        strcpy(clube.cidade, buffer);
 
         printf("ESTADIO: \n");
         fgetstr(buffer, 30, stdin);
-        if(!strcmp(buffer, "/sair")){return;}
-        strcpy(clube.nome, buffer);
+        if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
+        strcpy(clube.estadio, buffer);
 
         save->clubes[i] = clube;
     }
@@ -107,10 +106,11 @@ void menuRodadas(Save* save){
     for(int i = save->turnoIndex; i < 2; save->turnoIndex = i++){
         for(int j = save->rodadaIndex; j < 19; save->rodadaIndex = j++){
             for(int k = save->rodadas[i][j].jogoIndex; k < 10; save->rodadas[i][j].jogoIndex = k++){
-                save->rodadas[i][j].jogos[k];
+                save->rodadas[i][j].jogos[k].
             }
         }
     }
+
     save->turnoIndex++;
 }
 
@@ -123,16 +123,31 @@ void menuSalvar(Save *save){
     Salvar(save);
 }
 
-// Save menuContinuar(){
-//     //printf("asjdhkas");
-//     char** saves = listarSaves();
-//     for(int i = 0;  i < 1; i++){
-//         //sleep(10);
-//         printf("%i) %s\n", i + 1, saves[0]);
-//     }
-//     int op;
-//     scanf("%i", &op);
-//     printf("<Save CARREGADO, APERTE (ENTER) PARA CONTINUAR>\n");
-//     return resgatarSave(saves[op - 1]);
-// }
+ Save menuContinuar(char* login){
+     //printf("asjdhkas");
+    char* saves = listarSaves(login);
+    char* buffer;
+
+    buffer = strtok(saves, "\n");
+    int i = 1;
+
+    while(buffer){
+        printf("%i) %s\n", i, buffer);
+        buffer = strtok(NULL, "\n");
+        i++;
+    }
+
+    int op;
+    scanf("%i", &op);
+
+    i = 1;
+    buffer = strtok(saves, "\n");
+    while(i < op){
+        buffer = strtok(NULL, "\n");
+        i++;
+    }
+
+    printf("<SAVE CARREGADO, APERTE (ENTER) PARA CONTINUAR>\n");
+    return resgatarSave(buffer);
+}
 #endif

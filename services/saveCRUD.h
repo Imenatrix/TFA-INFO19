@@ -64,7 +64,7 @@ Save resgatarSave(char* nome){
     FILE* saves = fopen("saves.bin", "rb");
 
     Save save;
-
+    memset(&save, 0, sizeof(Save));
     while(fread(&save, sizeof(Save), 1, saves)){
         if(!strcmp(save.nome, nome)){
             fclose(saves);
@@ -77,45 +77,28 @@ Save resgatarSave(char* nome){
     return save;
 }
 
-Save listarSaves(){
+char* listarSaves(char* usuario){
     FILE* saves = fopen("saves.bin", "rb");
 
-    int index = 0;
+    Save resgatarSave();
+
+    int rax = 0;
+
     Save save;
     memset(&save, 0, sizeof(Save));
-    char** nomes = malloc(sizeof(char*));
+
+    char* nomes = malloc(sizeof(char));
+    nomes[0] = '\0';
 
     while(fread(&save, sizeof(Save), 1, saves)){
-        index++;
-        nomes = realloc(nomes, (index + 1) * sizeof(char*));
-        nomes[index] = malloc(30 * sizeof(char));
-        strcpy(nomes[index], save.nome);
-        puts(save.nome);
-        puts(nomes[index]);
-    }
-
-    for(int i = 0; i < index; i++){
-        for(int j = index - i; j < index; j++){
-            if(strcmp(nomes[i], nomes[j]) < 0){
-                char aux[30];
-                strcpy(aux, nomes[i]);
-                strcpy(nomes[i], nomes[j]);
-                strcpy(nomes[j], aux);
-            }
+        if(!strcmp(save.usuario, usuario)){
+            rax += (strlen(save.nome) + 1) * sizeof(char);
+            nomes = realloc(nomes, rax);
+            strcat(nomes, save.nome);
+            strcat(nomes, "\n");
         }
     }
-
-    //char** saves = listarSaves();
-    nomes[index] = "";
     fclose(saves);
-
-    for(int i = 0; !strcmp(nomes[i], ""); i++){
-        printf("%i) %s\n", i + 1, nomes[i]);
-    }
-    int op;
-    scanf("%i", &op);
-    printf("<Save CARREGADO, APERTE (ENTER) PARA CONTINUAR>\n");
-    return resgatarSave(nomes[op - 1]);
-
+    return nomes;
 }
 #endif

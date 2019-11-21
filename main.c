@@ -3,9 +3,9 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <stdio_ext.h>
-//#include <conio.h>
-#include "services/gea.h"
+//#include <stdio_ext.h>
+#include <conio.h>
+//#include "services/gea.h"
 #include "entities/Usuario.h"
 #include "entities/Jogo.h"
 #include "entities/Clube.h"
@@ -25,10 +25,10 @@ void main(){
             usuario = menuLogin();
             if(usuario.tipo != -1){
                 if(usuario.tipo){
-                    menuAdmin(usuario);
+                    menuAdmin(&usuario);
                 }
                 else{
-                    menuUsuario(usuario);
+                    menuUsuario(&usuario);
                 }
             }
             else{
@@ -36,7 +36,7 @@ void main(){
             }
         }
         else{
-            system("clear");
+            system("cls");
             menuCadastro(1);
             getch();
         }

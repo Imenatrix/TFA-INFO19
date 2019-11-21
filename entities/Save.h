@@ -3,12 +3,12 @@
 
 typedef struct{
 
-    bool chave;
+    bool chave[20][20];
     int clubeIndex;
     int rodadaIndex;
     int turnoIndex;
     char nome[30];
-    Usuario usuario;
+    char usuario[12];
     Clube clubes[20];
     Rodada rodadas[2][19];
 

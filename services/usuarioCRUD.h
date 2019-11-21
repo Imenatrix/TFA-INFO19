@@ -21,6 +21,7 @@ Usuario efetuarLogin(char* login, char* senha){
     FILE *usuarios = fopen("usuarios.bin", "rb");
 
     Usuario usuario;
+    memset(&usuario, 0, sizeof(Usuario));
 
     while(fread(&usuario, sizeof(Usuario), 1, usuarios)){
         if(!strcmp(usuario.login, login) && !strcmp(usuario.senha, senha)){
@@ -130,6 +131,7 @@ Usuario* listarUsuarios(){
     //gambiarra?
     usuario[index].tipo = -1;
     fclose(usuarios);
+    printf("ok");
     return usuario;
 }
 

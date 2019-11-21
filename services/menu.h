@@ -1,17 +1,19 @@
 #ifndef MENU_H
 #define MENU_H
 
-void menuUsuario(Usuario usuario){
+void menuUsuario(Usuario* usuario){
 
     Save save;
+    memset(&save, 0, sizeof(save));
+    strcpy(save.usuario, usuario->login);
 
     int o;
 
     bool menu = true;
 
     while(menu){
-        system("clear");
-        printf("Seja bem-vindo, %s!\n", usuario.nome);
+        system("cls");
+        printf("Seja bem-vindo, %s!\n", usuario->nome);
         printf("1) Iniciar novo campeonato\n");
         printf("2) Continuar\n");
         printf("3) Modificar Dados de Autenticação\n");
@@ -22,21 +24,22 @@ void menuUsuario(Usuario usuario){
 
         scanf("%i", &o);
 
-        //system("clear");
+        system("cls");
         switch(o){
             case 1:
                 memset(&save, 0, sizeof(save));
+                strcpy(save.usuario, usuario->login);
                 menuRodadas(&save);
                 break;
 
             case 2:
                 //save = menuContinuar();
-                save = listarSaves();
+                save = menuContinuar(save.usuario);
                 menuRodadas(&save);
                 break;
 
             case 3:
-                menuAlterarDados(usuario.login);
+                menuAlterarDados(usuario->login);
                 break;
 
             case 4:
@@ -66,7 +69,7 @@ void menuUsuario(Usuario usuario){
     }
 }
 
-void menuAdmin(Usuario usuario){
+void menuAdmin(Usuario* usuario){
 
     int o;
 
@@ -75,8 +78,8 @@ void menuAdmin(Usuario usuario){
 
     while(menu){
 
-        system("clear");
-        printf("Seja bem-vindo: %s\n", usuario.nome);
+        system("cls");
+        printf("Seja bem-vindo: %s\n", usuario->nome);
         printf("1) Cadastrar Usuário\n");
         printf("2) Visualizar Usuário\n");
         printf("3) Remover Usuário\n");
@@ -85,7 +88,7 @@ void menuAdmin(Usuario usuario){
 
         scanf("%i", &o);
 
-        system("clear");
+        system("cls");
         switch(o){
             case 1:
                 menuCadastro(0);
@@ -97,7 +100,7 @@ void menuAdmin(Usuario usuario){
 
             case 3:
                 login = menuRemover();
-                if(!strcmp(usuario.login, login)){
+                if(!strcmp(usuario->login, login)){
                    menu = false;
                 }
                 free(login);
@@ -128,7 +131,7 @@ Usuario menuLogin(){
 
     Usuario usuario;
 
-    system("clear");
+    system("cls");
     printf("LOGIN: ");
     fgetstr(login, 12, stdin);
     printf("SENHA: ");
