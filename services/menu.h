@@ -47,6 +47,7 @@ void menuUsuario(Usuario* usuario){
                 break;
 
             case 5:
+                menuRanking(&save);
                 break;
 
             case 6:

@@ -90,7 +90,8 @@ void menuRodadas(Save* save){
         if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
         strcpy(clube.nome, buffer);
 
-        printf("CIDADE: \n");
+        /*printf("CIDADE: \n");
+
         fgetstr(buffer, 30, stdin);
         if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
         strcpy(clube.cidade, buffer);
@@ -98,20 +99,62 @@ void menuRodadas(Save* save){
         printf("ESTADIO: \n");
         fgetstr(buffer, 30, stdin);
         if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
-        strcpy(clube.estadio, buffer);
+        strcpy(clube.estadio, buffer);*/
 
         save->clubes[i] = clube;
     }
     save->clubeIndex++;
-    for(int i = save->turnoIndex; i < 2; save->turnoIndex = i++){
-        for(int j = save->rodadaIndex; j < 19; save->rodadaIndex = j++){
-            for(int k = save->rodadas[i][j].jogoIndex; k < 10; save->rodadas[i][j].jogoIndex = k++){
-                save->rodadas[i][j].jogos[k].
+
+    for(int i = 0; i < 19; i++){
+        int* chave = gerarRodada(i);
+        for(int j = 0; j < 10; j++){
+
+            int golsMandante = rand() % 6;
+            int golsVisitante = rand() % 6;
+
+            save->clubes[chave[j]].jogos++;
+            save->clubes[chave[j + 10]].jogos++;
+
+            if(golsMandante > golsVisitante){
+                save->clubes[chave[j]].vitorias++;
+                save->clubes[chave[j + 10]].derrotas++;
+
+                save->clubes[chave[j]].pontos += 3;
             }
+            else if(golsMandante < golsVisitante){
+                save->clubes[chave[j]].derrotas++;
+                save->clubes[chave[j + 10]].vitorias++;
+
+                save->clubes[chave[j + 10]].pontos += 3;
+            }
+            else{
+                save->clubes[chave[j]].empates++;
+                save->clubes[chave[j + 10]].empates++;
+
+                save->clubes[chave[j]].pontos++;
+                save->clubes[chave[j + 10]].pontos++;
+            }
+            save->clubes[chave[j]].gp += golsMandante;
+            save->clubes[chave[j + 10]].gc += golsMandante;
+            save->clubes[chave[j]].gc += golsVisitante;
+            save->clubes[chave[j + 10]].gp += golsVisitante;
+
+            save->clubes[chave[j]].sg += golsMandante - golsVisitante;
+            save->clubes[chave[j + 10]].sg += golsVisitante - golsMandante;
+
+            save->chave[chave[j]][chave[j + 10]] = true;
+            save->chave[chave[j + 10]][chave[j]] = true;
         }
+        free(chave);
     }
 
-    save->turnoIndex++;
+    for(int i = 0; i < 20; i++){
+        for(int j = 0; j < 20; j++){
+            printf("%i ", save->chave[i][j]);
+        }
+        printf("\n");
+    }
+
 }
 
 void menuSalvar(Save *save){
@@ -141,13 +184,55 @@ void menuSalvar(Save *save){
     scanf("%i", &op);
 
     i = 1;
+    saves = listarSaves(login);
     buffer = strtok(saves, "\n");
+    printf("%s", buffer);
     while(i < op){
         buffer = strtok(NULL, "\n");
+        printf("%s", buffer);
         i++;
     }
+    free(saves);
 
     printf("<SAVE CARREGADO, APERTE (ENTER) PARA CONTINUAR>\n");
     return resgatarSave(buffer);
 }
+
+void menuRanking(Save* save){
+
+    Clube* copia = malloc(sizeof(save->clubes));
+    memcpy(copia, &save->clubes, sizeof(save->clubes));
+
+    for(int i = 0; i < sizeof(save->clubes) / sizeof(Clube); i++){
+        copia[i].mgp = ((double)copia[i].gp) / copia[i].jogos;
+        copia[i].mgc = ((double)copia[i].gc) / copia[i].jogos;
+    }
+
+    for(int i = 0; i < sizeof(save->clubes) / sizeof(Clube); i++){
+        for(int j = i; j < sizeof(save->clubes) / sizeof(Clube); j++){
+            if(copia[i].pontos < copia[j].pontos){
+                Clube aux = copia[i];
+                copia[i] = copia[j];
+                copia[j] = aux;
+            }
+        }
+    }
+
+    for(int i = 0; i < sizeof(save->clubes) / sizeof(Clube); i++){
+        printf("%s | %i | %i | %i | %i | %i | %i | %i| %i | %.2lf | %.2lf\n",
+            copia[i].nome,
+            copia[i].pontos,
+            copia[i].jogos,
+            copia[i].vitorias,
+            copia[i].empates,
+            copia[i].derrotas,
+            copia[i].gp,
+            copia[i].gc,
+            copia[i].sg,
+            copia[i].mgp,
+            copia[i].mgc
+        );
+    }
+}
+
 #endif

@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <time.h>
+#include <math.h>
 //#include <stdio_ext.h>
 #include <conio.h>
 //#include "services/gea.h"
@@ -18,6 +20,8 @@
 #include "services/menu.h"
 
 void main(){
+
+    srand(time(NULL));
 
     while(true){
         if(verificaAdmin()){
