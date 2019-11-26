@@ -19,9 +19,7 @@ bool Salvar(Save* save){
             return true;
         }
     }
-
     fwrite(save, sizeof(Save), 1, saves);
-
     fclose(saves);
     return true;
 }
@@ -80,25 +78,26 @@ Save resgatarSave(char* nome){
 char* listarSaves(char* usuario){
     FILE* saves = fopen("saves.bin", "rb");
 
-    Save resgatarSave();
+    if(saves){
 
-    int rax = 0;
+        int rax = 0;
+        char* nomes = malloc(sizeof(char));
 
-    Save save;
-    memset(&save, 0, sizeof(Save));
+        Save save;
+        memset(&save, 0, sizeof(Save));
 
-    char* nomes = malloc(sizeof(char));
-    nomes[0] = '\0';
-
-    while(fread(&save, sizeof(Save), 1, saves)){
-        if(!strcmp(save.usuario, usuario)){
-            rax += (strlen(save.nome) + 1) * sizeof(char);
-            nomes = realloc(nomes, rax);
-            strcat(nomes, save.nome);
-            strcat(nomes, "\n");
+        nomes[0] = '\0';
+        while(fread(&save, sizeof(Save), 1, saves)){
+            if(!strcmp(save.usuario, usuario)){
+                rax += (strlen(save.nome) + 1) * sizeof(char);
+                nomes = realloc(nomes, rax);
+                strcat(nomes, save.nome);
+                strcat(nomes, "\n");
+            }
         }
+        fclose(saves);
+        return nomes;
     }
-    fclose(saves);
-    return nomes;
+    return NULL;
 }
 #endif

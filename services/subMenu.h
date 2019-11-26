@@ -6,9 +6,10 @@ void menuAlterarDados(char* login){
 
     strcpy(usuario.login, login);
 
-    printf("NOVO NOME: ");
+    printf("-ALTERAR CREDENCIAIS-\n\n");
+    printf("Novo Nome: ");
     fgetstr(usuario.nome, 30, stdin);
-    printf("NOVA SENHA: ");
+    printf("Nova Senha: ");
     fgetstr(usuario.senha, 12, stdin);
     if(alterarUsuario(&usuario)){
         printf("<DADOS ALTERADOS COM SUCESSO>\n");
@@ -38,10 +39,10 @@ void menuCadastro(int tipo){
     Usuario usuario = newUsuario(tipo, "", "", "");
 
     if(tipo){
-        printf("-CADASTRO DO ADMIN-\n");
+        printf("-CADASTRO DO ADMIN-\n\n");
     }
     else{
-        printf("-CADASTRO DO USUARIO-\n");
+        printf("-CADASTRO DO USUARIO-\n\n");
     }
     printf("NOME: ");
     fgetstr(usuario.nome, 30, stdin);
@@ -62,7 +63,7 @@ char* menuRemover(){
 
     char* login = malloc(12 * sizeof(char));
 
-    printf("-REMOVER USUARIO-\n");
+    printf("-REMOVER USUARIO-\n\n");
     printf("LOGIN: ");
     fgetstr(login, 12, stdin);
     if(removerUsuario(login)){
@@ -75,105 +76,168 @@ char* menuRemover(){
     }
 }
 
+void menuSalvar(Save *save, bool perguntar){
+
+    if(perguntar){
+
+        bool flag = true;
+
+        while(flag){
+
+            char op;
+
+            printf("<DESEJA SALVAR O CAMPEONATO ATUAL? (s/n)>\n");
+            scanf("%c", &op);
+
+            switch (op){
+
+            case 's':
+                flag = false;
+                break;
+
+            case 'n':
+                return;
+                break;
+            
+            default:
+                printf("<OPÇÂO INVALIDA>");
+                break;
+            }
+            
+        }
+    }
+
+    char* saves = listarSaves(save->usuario);
+    char* buffer;
+
+
+    printf("-SALVAR-\n\n");
+    if(saves){
+        buffer = strtok(saves, "\n");
+        int i = 1;
+
+        printf("<EM QUAL SAVE DESEJA SALVAR?>\n");
+        printf("<DIGITE /novo PARA CRIAR UM NOVO SAVE>\n");
+        while(buffer){
+            printf("%i) %s\n", i, buffer);
+            buffer = strtok(NULL, "\n");
+            i++;
+        }
+
+        char* bufferComando = malloc(sizeof(char));
+        fgetstr(bufferComando, 30, stdin);
+
+        if(!strcmp(bufferComando, "/novo")){
+
+            printf("NOME: ");
+            fgetstr(save->nome, 30, stdin);
+            Salvar(save);
+            printf("<SALVO COM SUCESSO!>");
+            return;
+        }
+
+        int op = atoi(bufferComando[0]);
+        if(op == 0){printf("<OPÇÂO INVALIDA>");return;}
+
+        i = 1;
+        saves = listarSaves(save->usuario);
+        buffer = strtok(saves, "\n");
+        while(i < op){
+            buffer = strtok(NULL, "\n");
+            i++;
+        }
+        strcpy(save->nome, buffer);
+        Salvar(save);
+
+        free(saves);
+        printf("<SALVO COM SUCESSO!>");
+    }
+}
+
 void menuRodadas(Save* save){
-    for(int i = save->clubeIndex; i < 20; save->clubeIndex = i++){
+
+    printf("<DIGITE /sair PARA VOLTAR AO MENU INICIAL>\n");
+    for(; save->clubeIndex < 20; save->clubeIndex++){
 
         Clube clube;
         char buffer[30];
         memset(&clube, 0, sizeof(Clube));
 
-        printf("-CADASTRO DE CLUBE %i-\n", i + 1);
-        printf("<DIGITE /sair PARA VOLTAR AO MENU INICIAL>\n");
+        printf("\n-CADASTRO DE CLUBE %i-\n", save->clubeIndex + 1);
 
         printf("NOME: \n");
         fgetstr(buffer, 30, stdin);
-        if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
+        if(!strcmp(buffer, "/sair")){menuSalvar(save, true);return;}
         strcpy(clube.nome, buffer);
 
         /*printf("CIDADE: \n");
 
         fgetstr(buffer, 30, stdin);
-        if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
+        if(!strcmp(buffer, "/sair")){menuSalvar(save, true);return;}
         strcpy(clube.cidade, buffer);
 
         printf("ESTADIO: \n");
         fgetstr(buffer, 30, stdin);
-        if(!strcmp(buffer, "/sair")){save->clubeIndex++;return;}
+        if(!strcmp(buffer, "/sair")){menuSalvar(save, true);return;}
         strcpy(clube.estadio, buffer);*/
 
-        save->clubes[i] = clube;
+        save->clubes[save->clubeIndex] = clube;
     }
-    save->clubeIndex++;
 
-    for(int i = 0; i < 19; i++){
-        int* chave = gerarRodada(i);
-        for(int j = 0; j < 10; j++){
+    for(; save->turnoIndex < 2; save->turnoIndex++){
+        for(; save->rodadaIndex < 19; save->rodadaIndex++){
+            int* chave = gerarRodada(save->rodadaIndex);
+            for(; save->jogoIndex < 10; save->jogoIndex++){
 
-            int golsMandante = rand() % 6;
-            int golsVisitante = rand() % 6;
+                int golsMandante = rand() % 6;
+                int golsVisitante = rand() % 6;
 
-            save->clubes[chave[j]].jogos++;
-            save->clubes[chave[j + 10]].jogos++;
+                save->clubes[chave[save->jogoIndex]].jogos++;
+                save->clubes[chave[save->jogoIndex + 10]].jogos++;
 
-            if(golsMandante > golsVisitante){
-                save->clubes[chave[j]].vitorias++;
-                save->clubes[chave[j + 10]].derrotas++;
+                if(golsMandante > golsVisitante){
+                    save->clubes[chave[save->jogoIndex]].vitorias++;
+                    save->clubes[chave[save->jogoIndex + 10]].derrotas++;
 
-                save->clubes[chave[j]].pontos += 3;
+                    save->clubes[chave[save->jogoIndex]].pontos += 3;
+                }
+                else if(golsMandante < golsVisitante){
+                    save->clubes[chave[save->jogoIndex]].derrotas++;
+                    save->clubes[chave[save->jogoIndex + 10]].vitorias++;
+
+                    save->clubes[chave[save->jogoIndex + 10]].pontos += 3;
+                }
+                else{
+                    save->clubes[chave[save->jogoIndex]].empates++;
+                    save->clubes[chave[save->jogoIndex + 10]].empates++;
+
+                    save->clubes[chave[save->jogoIndex]].pontos++;
+                    save->clubes[chave[save->jogoIndex + 10]].pontos++;
+                }
+                save->clubes[chave[save->jogoIndex]].gp += golsMandante;
+                save->clubes[chave[save->jogoIndex + 10]].gc += golsMandante;
+                save->clubes[chave[save->jogoIndex]].gc += golsVisitante;
+                save->clubes[chave[save->jogoIndex + 10]].gp += golsVisitante;
+
+                save->clubes[chave[save->jogoIndex]].sg += golsMandante - golsVisitante;
+                save->clubes[chave[save->jogoIndex + 10]].sg += golsVisitante - golsMandante;
+
             }
-            else if(golsMandante < golsVisitante){
-                save->clubes[chave[j]].derrotas++;
-                save->clubes[chave[j + 10]].vitorias++;
-
-                save->clubes[chave[j + 10]].pontos += 3;
-            }
-            else{
-                save->clubes[chave[j]].empates++;
-                save->clubes[chave[j + 10]].empates++;
-
-                save->clubes[chave[j]].pontos++;
-                save->clubes[chave[j + 10]].pontos++;
-            }
-            save->clubes[chave[j]].gp += golsMandante;
-            save->clubes[chave[j + 10]].gc += golsMandante;
-            save->clubes[chave[j]].gc += golsVisitante;
-            save->clubes[chave[j + 10]].gp += golsVisitante;
-
-            save->clubes[chave[j]].sg += golsMandante - golsVisitante;
-            save->clubes[chave[j + 10]].sg += golsVisitante - golsMandante;
-
-            save->chave[chave[j]][chave[j + 10]] = true;
-            save->chave[chave[j + 10]][chave[j]] = true;
+            free(chave);
+            save->jogoIndex = 0;
         }
-        free(chave);
+        save->rodadaIndex = 0;
     }
-
-    for(int i = 0; i < 20; i++){
-        for(int j = 0; j < 20; j++){
-            printf("%i ", save->chave[i][j]);
-        }
-        printf("\n");
-    }
-
 }
 
-void menuSalvar(Save *save){
-
-    if(!strcmp(save->nome, "")){
-        printf("NOME: ");
-        fgetstr(save->nome, 30, stdin);
-    }
-    Salvar(save);
-}
-
- Save menuContinuar(char* login){
-     //printf("asjdhkas");
-    char* saves = listarSaves(login);
+Save menuContinuar(char* usuario){
+    char* saves = listarSaves(usuario);
     char* buffer;
 
     buffer = strtok(saves, "\n");
     int i = 1;
 
+    printf("-SALVOS-\n\n");
     while(buffer){
         printf("%i) %s\n", i, buffer);
         buffer = strtok(NULL, "\n");
@@ -184,21 +248,21 @@ void menuSalvar(Save *save){
     scanf("%i", &op);
 
     i = 1;
-    saves = listarSaves(login);
+    saves = listarSaves(usuario);
     buffer = strtok(saves, "\n");
-    printf("%s", buffer);
     while(i < op){
         buffer = strtok(NULL, "\n");
-        printf("%s", buffer);
         i++;
     }
-    free(saves);
 
+    Save save = resgatarSave(buffer);
     printf("<SAVE CARREGADO, APERTE (ENTER) PARA CONTINUAR>\n");
-    return resgatarSave(buffer);
+
+    free(saves);
+    return save;
 }
 
-void menuRanking(Save* save){
+void Ranking(Save* save){
 
     Clube* copia = malloc(sizeof(save->clubes));
     memcpy(copia, &save->clubes, sizeof(save->clubes));
@@ -218,8 +282,9 @@ void menuRanking(Save* save){
         }
     }
 
+
     for(int i = 0; i < sizeof(save->clubes) / sizeof(Clube); i++){
-        printf("%s | %i | %i | %i | %i | %i | %i | %i| %i | %.2lf | %.2lf\n",
+        printf("%s | %i | %i | %i | %i | %i | %i | %i | %i | %.2lf | %.2lf | %i\n",
             copia[i].nome,
             copia[i].pontos,
             copia[i].jogos,
@@ -230,7 +295,8 @@ void menuRanking(Save* save){
             copia[i].gc,
             copia[i].sg,
             copia[i].mgp,
-            copia[i].mgc
+            copia[i].mgc,
+            copia[i].lastPos - i
         );
     }
 }

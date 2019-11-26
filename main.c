@@ -5,9 +5,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <math.h>
-//#include <stdio_ext.h>
-#include <conio.h>
-//#include "services/gea.h"
+#include <stdio_ext.h>
+//#include <conio.h>
+#include "services/gea.h"
 #include "entities/Usuario.h"
 #include "entities/Jogo.h"
 #include "entities/Clube.h"
@@ -40,7 +40,7 @@ void main(){
             }
         }
         else{
-            system("cls");
+            system("clear");
             menuCadastro(1);
             getch();
         }

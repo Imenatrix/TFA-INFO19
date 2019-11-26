@@ -6,10 +6,10 @@ typedef struct{
     char nome[30];
     char usuario[12];
     int clubeIndex;
-    //int rodadaIndex;
+    int turnoIndex;
+    int rodadaIndex;
+    int jogoIndex;
     Clube clubes[20];
-    ///Rodada rodadas[2][19];
-    bool chave[20][20];
 
 } Save;
 

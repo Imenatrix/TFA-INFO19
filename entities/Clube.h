@@ -13,7 +13,7 @@ typedef struct{
     int sg;
     double mgp;
     double mgc;
-    //int m;
+    int lastPos;
     char nome[30];
     char cidade[30];
     char estadio[30];
