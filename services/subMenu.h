@@ -87,7 +87,7 @@ void menuSalvar(Save *save, bool perguntar){
             char op;
 
             printf("<DESEJA SALVAR O CAMPEONATO ATUAL? (s/n)>\n");
-            scanf("%c", &op);
+            scanf(" %c", &op);
 
             switch (op){
 
@@ -98,12 +98,12 @@ void menuSalvar(Save *save, bool perguntar){
             case 'n':
                 return;
                 break;
-            
+
             default:
                 printf("<OPÇÂO INVALIDA>");
                 break;
             }
-            
+
         }
     }
 
@@ -124,51 +124,54 @@ void menuSalvar(Save *save, bool perguntar){
             i++;
         }
 
-        char* bufferComando = malloc(sizeof(char));
-        fgetstr(bufferComando, 30, stdin);
+        char bufferComando[6];
+        fgetstr(bufferComando, 6, stdin);
 
-        if(!strcmp(bufferComando, "/novo")){
+        if(strcmp(bufferComando, "/novo")){
 
-            printf("NOME: ");
-            fgetstr(save->nome, 30, stdin);
+            int op = atoi(bufferComando);
+            if(op == 0){printf("<OPÇÂO INVALIDA>");return;}
+
+            i = 1;
+            saves = listarSaves(save->usuario);
+            buffer = strtok(saves, "\n");
+            while(i < op){
+                buffer = strtok(NULL, "\n");
+                i++;
+            }
+            strcpy(save->nome, buffer);
             Salvar(save);
+
+            free(saves);
             printf("<SALVO COM SUCESSO!>");
             return;
+
         }
-
-        int op = atoi(bufferComando[0]);
-        if(op == 0){printf("<OPÇÂO INVALIDA>");return;}
-
-        i = 1;
-        saves = listarSaves(save->usuario);
-        buffer = strtok(saves, "\n");
-        while(i < op){
-            buffer = strtok(NULL, "\n");
-            i++;
-        }
-        strcpy(save->nome, buffer);
-        Salvar(save);
-
-        free(saves);
-        printf("<SALVO COM SUCESSO!>");
     }
+    printf("NOME: ");
+    fgetstr(save->nome, 30, stdin);
+    Salvar(save);
+
+    free(saves);
+    printf("<SALVO COM SUCESSO!>");
 }
 
 void menuRodadas(Save* save){
+
+    char bufferComando[30];
 
     printf("<DIGITE /sair PARA VOLTAR AO MENU INICIAL>\n");
     for(; save->clubeIndex < 20; save->clubeIndex++){
 
         Clube clube;
-        char buffer[30];
         memset(&clube, 0, sizeof(Clube));
 
         printf("\n-CADASTRO DE CLUBE %i-\n", save->clubeIndex + 1);
 
         printf("NOME: \n");
-        fgetstr(buffer, 30, stdin);
-        if(!strcmp(buffer, "/sair")){menuSalvar(save, true);return;}
-        strcpy(clube.nome, buffer);
+        fgetstr(bufferComando, 30, stdin);
+        if(!strcmp(bufferComando, "/sair")){menuSalvar(save, true);return;}
+        strcpy(clube.nome, bufferComando);
 
         /*printf("CIDADE: \n");
 
@@ -184,13 +187,47 @@ void menuRodadas(Save* save){
         save->clubes[save->clubeIndex] = clube;
     }
 
+    bool automatico = false;
+    bool muitoAutomatico = false;
+    int golsMandante;
+    int golsVisitante;
+
+    printf("<DIGITE /auto, /auto*>\n");
+
     for(; save->turnoIndex < 2; save->turnoIndex++){
         for(; save->rodadaIndex < 19; save->rodadaIndex++){
             int* chave = gerarRodada(save->rodadaIndex);
             for(; save->jogoIndex < 10; save->jogoIndex++){
 
-                int golsMandante = rand() % 6;
-                int golsVisitante = rand() % 6;
+                if(!automatico){
+                    fgetstr(bufferComando, 7, stdin);
+                    if(!strcmp(bufferComando, "/auto")){automatico = true;}
+                    else if(!strcmp(bufferComando, "/auto*")){muitoAutomatico = true; automatico = true;}
+                }
+
+                if(automatico){
+                    golsMandante = rand() % 6;
+                }
+                else{
+                    golsMandante = atoi(bufferComando);
+                }
+
+                if(!automatico){
+                    fgetstr(bufferComando, 6, stdin);
+                    if(!strcmp(bufferComando, "/auto")){automatico = true;}
+                    else if(!strcmp(bufferComando, "/auto*")){muitoAutomatico = true; automatico = true;}
+                }
+
+                if(automatico){
+                    golsVisitante = rand() % 6;
+                }
+                else{
+                    golsVisitante = atoi(bufferComando);
+                }
+
+                if(!muitoAutomatico){
+                    automatico = false;
+                }
 
                 save->clubes[chave[save->jogoIndex]].jogos++;
                 save->clubes[chave[save->jogoIndex + 10]].jogos++;

@@ -13,7 +13,7 @@ void menuUsuario(Usuario* usuario){
     bool menu = true;
 
     while(menu){
-        system("clear");
+        system("cls");
         printf("Seja bem-vindo, %s!\n\n", usuario->nome);
         printf("1) Iniciar novo campeonato\n");
         printf("2) Continuar\n");
@@ -25,7 +25,7 @@ void menuUsuario(Usuario* usuario){
 
         scanf("%i", &o);
 
-        system("clear");
+        system("cls");
         switch(o){
             case 1:
                 memset(&save, 0, sizeof(save));
@@ -37,7 +37,7 @@ void menuUsuario(Usuario* usuario){
                 //memset(&save, 0, sizeof(save));
                 //strcpy(save.usuario, usuario->login);
                 save = menuContinuar(save.usuario);
-                system("clear");
+                system("cls");
                 menuRodadas(&save);
                 break;
 
@@ -82,7 +82,7 @@ void menuAdmin(Usuario* usuario){
 
     while(menu){
 
-        system("clear");
+        system("cls");
         printf("Seja bem-vindo, %s\n\n", usuario->nome);
         printf("1) Cadastrar Usuário\n");
         printf("2) Visualizar Usuário\n");
@@ -92,7 +92,7 @@ void menuAdmin(Usuario* usuario){
 
         scanf("%i", &o);
 
-        system("clear");
+        system("cls");
         switch(o){
             case 1:
                 menuCadastro(0);
@@ -135,7 +135,7 @@ Usuario menuLogin(){
 
     Usuario usuario;
 
-    system("clear");
+    system("cls");
     printf("-LOGIN-\n\n");
     printf("Login: ");
     fgetstr(login, 12, stdin);
