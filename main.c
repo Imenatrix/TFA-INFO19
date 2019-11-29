@@ -5,14 +5,16 @@
 #include <unistd.h>
 #include <time.h>
 #include <math.h>
-//#include <stdio_ext.h>
-#include <conio.h>
-//#include "services/gea.h"
+#include <stdio_ext.h>
+//#include <conio.h>
+#include "services/gea.h"
 #include "entities/Usuario.h"
 #include "entities/Jogo.h"
 #include "entities/Clube.h"
 #include "entities/Rodada.h"
+#include "entities/Turno.h"
 #include "entities/Save.h"
+#include "entities/ClubeRanking.h"
 #include "services/tfatools.h"
 #include "services/usuarioCRUD.h"
 #include "services/saveCRUD.h"
@@ -40,7 +42,7 @@ void main(){
             }
         }
         else{
-            system("cls");
+            system("clear");
             menuCadastro(1);
             getch();
         }

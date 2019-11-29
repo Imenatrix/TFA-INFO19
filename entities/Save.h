@@ -7,8 +7,7 @@ typedef struct{
     char usuario[12];
     int clubeIndex;
     int turnoIndex;
-    int rodadaIndex;
-    int jogoIndex;
+    Turno turnos[2];
     Clube clubes[20];
 
 } Save;

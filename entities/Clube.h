@@ -2,18 +2,7 @@
 #define CLUBE_H
 
 typedef struct{
-
-    int pontos;
-    int jogos;
-    int vitorias;
-    int empates;
-    int derrotas;
-    int gp;
-    int gc;
-    int sg;
-    double mgp;
-    double mgc;
-    int lastPos;
+    
     char nome[30];
     char cidade[30];
     char estadio[30];

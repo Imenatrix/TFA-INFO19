@@ -13,7 +13,7 @@ void menuUsuario(Usuario* usuario){
     bool menu = true;
 
     while(menu){
-        system("cls");
+        system("clear");
         printf("Seja bem-vindo, %s!\n\n", usuario->nome);
         printf("1) Iniciar novo campeonato\n");
         printf("2) Continuar\n");
@@ -25,7 +25,7 @@ void menuUsuario(Usuario* usuario){
 
         scanf("%i", &o);
 
-        system("cls");
+        system("clear");
         switch(o){
             case 1:
                 memset(&save, 0, sizeof(save));
@@ -37,7 +37,7 @@ void menuUsuario(Usuario* usuario){
                 //memset(&save, 0, sizeof(save));
                 //strcpy(save.usuario, usuario->login);
                 save = menuContinuar(save.usuario);
-                system("cls");
+                system("clear");
                 menuRodadas(&save);
                 break;
 
@@ -50,7 +50,7 @@ void menuUsuario(Usuario* usuario){
                 break;
 
             case 5:
-                Ranking(&save);
+                verRanking(&save);
                 break;
 
             case 6:
@@ -82,7 +82,7 @@ void menuAdmin(Usuario* usuario){
 
     while(menu){
 
-        system("cls");
+        system("clear");
         printf("Seja bem-vindo, %s\n\n", usuario->nome);
         printf("1) Cadastrar Usuário\n");
         printf("2) Visualizar Usuário\n");
@@ -92,7 +92,7 @@ void menuAdmin(Usuario* usuario){
 
         scanf("%i", &o);
 
-        system("cls");
+        system("clear");
         switch(o){
             case 1:
                 menuCadastro(0);
@@ -104,8 +104,11 @@ void menuAdmin(Usuario* usuario){
 
             case 3:
                 login = menuRemover();
-                if(!strcmp(usuario->login, login)){
-                   menu = false;
+
+                if(login){
+                    if(!strcmp(usuario->login, login)){
+                        menu = false;
+                    }
                 }
                 free(login);
                 break;
@@ -135,7 +138,7 @@ Usuario menuLogin(){
 
     Usuario usuario;
 
-    system("cls");
+    system("clear");
     printf("-LOGIN-\n\n");
     printf("Login: ");
     fgetstr(login, 12, stdin);

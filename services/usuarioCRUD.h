@@ -131,7 +131,6 @@ Usuario* listarUsuarios(){
     //gambiarra?
     usuario[index].tipo = -1;
     fclose(usuarios);
-    printf("ok");
     return usuario;
 }
 
