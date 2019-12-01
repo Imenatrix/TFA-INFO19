@@ -4,6 +4,9 @@
 void menuUsuario(Usuario* usuario){
 
     Save save;
+    Save* aux;
+
+    bool newSave = false;
 
     memset(&save, 0, sizeof(save));
     strcpy(save.usuario, usuario->login);
@@ -13,7 +16,7 @@ void menuUsuario(Usuario* usuario){
     bool menu = true;
 
     while(menu){
-        system("clear");
+        system("cls");
         printf("Seja bem-vindo, %s!\n\n", usuario->nome);
         printf("1) Iniciar novo campeonato\n");
         printf("2) Continuar\n");
@@ -25,28 +28,35 @@ void menuUsuario(Usuario* usuario){
 
         scanf("%i", &o);
 
-        system("clear");
+        system("cls");
         switch(o){
             case 1:
                 memset(&save, 0, sizeof(save));
                 strcpy(save.usuario, usuario->login);
+                newSave = true;
                 menuRodadas(&save);
                 break;
 
             case 2:
-                //memset(&save, 0, sizeof(save));
-                //strcpy(save.usuario, usuario->login);
-                save = menuContinuar(save.usuario);
-                system("clear");
-                menuRodadas(&save);
+                aux = menuContinuar(save.usuario);
+
+                if(aux){
+                    memcpy(&save, aux, sizeof(Save));
+                    free(aux);
+                    system("cls");
+                    newSave = true;
+                    menuRodadas(&save);
+                }
+
                 break;
 
             case 3:
-                menuAlterarDados(usuario->login);
+                menuAlterarDados(usuario);
                 break;
 
             case 4:
                 menuSalvar(&save, false);
+                newSave = false;
                 break;
 
             case 5:
@@ -54,12 +64,16 @@ void menuUsuario(Usuario* usuario){
                 break;
 
             case 6:
-                menuSalvar(&save, true);
+                if(newSave){
+                    menuSalvar(&save, true);
+                }
                 menu = false;
                 break;
 
             case 7:
-                menuSalvar(&save, true);
+                if(newSave){
+                    menuSalvar(&save, true);
+                }
                 exit(1);
                 break;
 
@@ -82,7 +96,7 @@ void menuAdmin(Usuario* usuario){
 
     while(menu){
 
-        system("clear");
+        system("cls");
         printf("Seja bem-vindo, %s\n\n", usuario->nome);
         printf("1) Cadastrar Usuário\n");
         printf("2) Visualizar Usuário\n");
@@ -92,7 +106,7 @@ void menuAdmin(Usuario* usuario){
 
         scanf("%i", &o);
 
-        system("clear");
+        system("cls");
         switch(o){
             case 1:
                 menuCadastro(0);
@@ -108,6 +122,7 @@ void menuAdmin(Usuario* usuario){
                 if(login){
                     if(!strcmp(usuario->login, login)){
                         menu = false;
+                        getch();
                     }
                 }
                 free(login);
@@ -131,23 +146,21 @@ void menuAdmin(Usuario* usuario){
     }
 }
 
-Usuario menuLogin(){
+bool menuLogin(Usuario* usuario){
 
     char login[12];
     char senha[12];
 
-    Usuario usuario;
-
-    system("clear");
+    system("cls");
     printf("-LOGIN-\n\n");
     printf("Login: ");
     fgetstr(login, 12, stdin);
     printf("Senha: ");
     fgetstr(senha, 12, stdin);
-    usuario = efetuarLogin(login, senha);
-    if(usuario.tipo == -1){
+    if(!efetuarLogin(usuario, login, senha)){
         printf("<CREDENCIAS INVÁLIDAS>\n");
+        return false;
     }
-    return usuario;
+    return true;
 }
 #endif

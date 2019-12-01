@@ -58,21 +58,19 @@ bool removerSave(Save* save){
     return false;
 }
 
-Save resgatarSave(char* nome){
+Save* resgatarSave(char* nome){
     FILE* saves = fopen("saves.bin", "rb");
 
-    Save save;
-    memset(&save, 0, sizeof(Save));
-    while(fread(&save, sizeof(Save), 1, saves)){
-        if(!strcmp(save.nome, nome)){
+    Save* save = malloc(sizeof(Save));
+    memset(save, 0, sizeof(Save));
+    while(fread(save, sizeof(Save), 1, saves)){
+        if(!strcmp(save->nome, nome)){
             fclose(saves);
             return save;
         }
     }
     fclose(saves);
-    memset(&save, 0, sizeof(Save));
-    save.clubeIndex = -1;
-    return save;
+    return NULL;
 }
 
 char* listarSaves(char* usuario){
@@ -89,12 +87,18 @@ char* listarSaves(char* usuario){
         nomes[0] = '\0';
         while(fread(&save, sizeof(Save), 1, saves)){
             if(!strcmp(save.usuario, usuario)){
-                rax += (strlen(save.nome) + 1) * sizeof(char);
+                rax += (strlen(save.nome) + 2) * sizeof(char);
                 nomes = realloc(nomes, rax);
+                nomes[rax - 1] = '\0';
                 strcat(nomes, save.nome);
                 strcat(nomes, "\n");
             }
         }
+
+        if(rax == 0){
+            return NULL;
+        }
+
         fclose(saves);
         return nomes;
     }

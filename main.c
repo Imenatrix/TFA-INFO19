@@ -5,9 +5,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <math.h>
-#include <stdio_ext.h>
-//#include <conio.h>
-#include "services/gea.h"
+//#include <stdio_ext.h>
+#include <conio.h>
+//#include "services/gea.h"
 #include "entities/Usuario.h"
 #include "entities/Jogo.h"
 #include "entities/Clube.h"
@@ -27,9 +27,10 @@ void main(){
 
     while(true){
         if(verificaAdmin()){
+
             Usuario usuario;
-            usuario = menuLogin();
-            if(usuario.tipo != -1){
+
+            if(menuLogin(&usuario)){
                 if(usuario.tipo){
                     menuAdmin(&usuario);
                 }
@@ -42,7 +43,7 @@ void main(){
             }
         }
         else{
-            system("clear");
+            system("cls");
             menuCadastro(1);
             getch();
         }

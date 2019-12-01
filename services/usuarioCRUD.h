@@ -17,21 +17,18 @@ bool verificaAdmin(){
     return false;
 }
 
-Usuario efetuarLogin(char* login, char* senha){
+bool efetuarLogin(Usuario* usuario, char* login, char* senha){
     FILE *usuarios = fopen("usuarios.bin", "rb");
 
-    Usuario usuario;
-    memset(&usuario, 0, sizeof(Usuario));
-
-    while(fread(&usuario, sizeof(Usuario), 1, usuarios)){
-        if(!strcmp(usuario.login, login) && !strcmp(usuario.senha, senha)){
+    while(fread(usuario, sizeof(Usuario), 1, usuarios)){
+        if(!strcmp(usuario->login, login) && !strcmp(usuario->senha, senha)){
             fclose(usuarios);
-            return usuario;
+            return true;
         }
     }
+    memset(usuario, 0, sizeof(Usuario));
     fclose(usuarios);
-    usuario.tipo = -1;
-    return usuario;
+    return false;
 }
 
 bool cadastrarUsuario(Usuario *usuario){
