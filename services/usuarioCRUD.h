@@ -2,12 +2,23 @@
 #define UsuarioCRUD_H
 
 bool verificaAdmin(){
-    FILE *usuarios = fopen("usuarios.bin", "ab+");
+    FILE *usuarios = fopen("usuarios.txt", "a+");
 
     Usuario usuario;
-    memset(&usuario, 0, sizeof(Usuario));
 
-    while(fread(&usuario, sizeof(Usuario), 1, usuarios)){
+    char fbuffer[sizeof(usuario)];
+
+    fseek(usuarios, 0, SEEK_END);
+    int fim = ftell(usuarios);
+    fseek(usuarios, 0, SEEK_SET);
+
+    while(ftell(usuarios) != fim){
+
+        for(int i = 0; i < sizeof(Usuario); i++){
+            fbuffer[i] = fgetc(usuarios);
+        }
+        memcpy(&usuario, fbuffer, sizeof(Usuario));
+
         if(usuario.tipo == 1){
             fclose(usuarios);
             return true;
@@ -18,9 +29,21 @@ bool verificaAdmin(){
 }
 
 bool efetuarLogin(Usuario* usuario, char* login, char* senha){
-    FILE *usuarios = fopen("usuarios.bin", "rb");
+    FILE *usuarios = fopen("usuarios.txt", "r");
 
-    while(fread(usuario, sizeof(Usuario), 1, usuarios)){
+    char fbuffer[sizeof(Usuario)];
+
+    fseek(usuarios, 0, SEEK_END);
+    int fim = ftell(usuarios);
+    fseek(usuarios, 0, SEEK_SET);
+
+    while(ftell(usuarios) != fim){
+
+        for(int i = 0; i < sizeof(Usuario); i++){
+            fbuffer[i] = fgetc(usuarios);
+        }
+        memcpy(usuario, fbuffer, sizeof(Usuario));
+
         if(!strcmp(usuario->login, login) && !strcmp(usuario->senha, senha)){
             fclose(usuarios);
             return true;
@@ -33,18 +56,33 @@ bool efetuarLogin(Usuario* usuario, char* login, char* senha){
 
 bool cadastrarUsuario(Usuario *usuario){
     FILE *usuarios;
-    usuarios = fopen("usuarios.bin", "ab+");
+    usuarios = fopen("usuarios.txt", "a+");
 
     Usuario temp;
-    memset(&temp, 0, sizeof(Usuario));
 
-    while(fread(&temp, sizeof(Usuario), 1, usuarios)){
+    char fbuffer[sizeof(Usuario)];
+
+    fseek(usuarios, 0, SEEK_END);
+    int fim = ftell(usuarios);
+    fseek(usuarios, 0, SEEK_SET);
+
+    while(ftell(usuarios) != fim){
+
+        for(int i = 0; i < sizeof(Usuario); i++){
+            fbuffer[i] = fgetc(usuarios);
+        }
+        memcpy(&temp, fbuffer, sizeof(Usuario));
+
         if(!strcmp(temp.login, usuario->login)){
             fclose(usuarios);
             return false;
         }
     }
-    fwrite(usuario, sizeof(Usuario), 1, usuarios);
+    fseek(usuarios, 0, SEEK_END);
+    memcpy(fbuffer, usuario, sizeof(Usuario));
+    for(int i = 0; i < sizeof(Usuario); i++){
+        fputc(fbuffer[i], usuarios);
+    }
 
     fclose(usuarios);
     return true;
@@ -52,15 +90,31 @@ bool cadastrarUsuario(Usuario *usuario){
 
 bool alterarUsuario(Usuario *usuario){
     FILE *usuarios;
-    usuarios = fopen("usuarios.bin", "rb+");
+    usuarios = fopen("usuarios.txt", "r+");
 
     Usuario temp;
-    memset(&temp, 0, sizeof(Usuario));
 
-    while(fread(&temp, sizeof(Usuario), 1, usuarios)){
+    char fbuffer[sizeof(Usuario)];
+
+    fseek(usuarios, 0, SEEK_END);
+    int fim = ftell(usuarios);
+    fseek(usuarios, 0, SEEK_SET);
+
+    while(ftell(usuarios) != fim){
+
+        for(int i = 0; i < sizeof(Usuario); i++){
+            fbuffer[i] = fgetc(usuarios);
+        }
+        memcpy(&temp, fbuffer, sizeof(Usuario));
+
         if(!strcmp(temp.login, usuario->login)){
             fseek(usuarios, -sizeof(Usuario), SEEK_CUR);
-            fwrite(usuario, sizeof(Usuario), 1, usuarios);
+
+            memcpy(fbuffer, usuario, sizeof(Usuario));
+            for(int i = 0; i < sizeof(Usuario); i++){
+                fputc(fbuffer[i], usuarios);
+            }
+
             fclose(usuarios);
             return true;
         }
@@ -70,16 +124,24 @@ bool alterarUsuario(Usuario *usuario){
 }
 
 bool removerUsuario(char* login){
-    FILE *usuarios = fopen("usuarios.bin", "rb+");
+    FILE *usuarios = fopen("usuarios.txt", "r+");
 
     Usuario usuario;
-    memset(&usuario, 0, sizeof(Usuario));
+
+    char fbuffer[sizeof(Usuario)];
 
     fseek(usuarios, 0, SEEK_END);
     int tam = ftell(usuarios) - sizeof(Usuario);
+    int fim = ftell(usuarios);
     fseek(usuarios, 0, SEEK_SET);
 
-    while(fread(&usuario, sizeof(Usuario), 1, usuarios)){
+    while(ftell(usuarios) != fim){
+
+        for(int i = 0; i < sizeof(Usuario); i++){
+            fbuffer[i] = fgetc(usuarios);
+        }
+        memcpy(&usuario, fbuffer, sizeof(Usuario));
+
         if(!strcmp(usuario.login, login)){
             if(ftell(usuarios) - sizeof(Usuario) == tam){
                 ftruncate(fileno(usuarios), tam);
@@ -88,12 +150,19 @@ bool removerUsuario(char* login){
                 int pos = ftell(usuarios) - sizeof(Usuario);
 
                 fseek(usuarios, -sizeof(Usuario), SEEK_END);
-                fread(&usuario, sizeof(Usuario), 1, usuarios);
+
+                for(int i = 0; i < sizeof(Usuario); i++){
+                    fbuffer[i] = fgetc(usuarios);
+                }
 
                 fseek(usuarios, pos, SEEK_SET);
-                fwrite(&usuario, sizeof(Usuario), 1, usuarios);
+
+                for(int i = 0; i < sizeof(Usuario); i++){
+                    fputc(fbuffer[i], usuarios);
+                }
+
                 ftruncate(fileno(usuarios), tam);
-                break;
+                //break;
             }
             fclose(usuarios);
             return true;
@@ -104,12 +173,24 @@ bool removerUsuario(char* login){
 }
 
 Usuario* listarUsuarios(){
-    FILE* usuarios = fopen("usuarios.bin", "rb");
+    FILE* usuarios = fopen("usuarios.txt", "r");
 
     int index = 0;
     Usuario* usuario = malloc(sizeof(Usuario));
 
-    while(fread(&usuario[index], sizeof(Usuario), 1, usuarios)){
+    char fbuffer[sizeof(Usuario)];
+
+    fseek(usuarios, 0, SEEK_END);
+    int fim = ftell(usuarios);
+    fseek(usuarios, 0, SEEK_SET);
+
+    while(ftell(usuarios) != fim){
+
+        for(int i = 0; i < sizeof(Usuario); i++){
+            fbuffer[i] = fgetc(usuarios);
+        }
+        memcpy(&usuario[index], fbuffer, sizeof(Usuario));
+
         index++;
         usuario = realloc(usuario, (index + 1) * sizeof(Usuario));
     }

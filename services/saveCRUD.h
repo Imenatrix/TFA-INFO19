@@ -3,67 +3,67 @@
 
 bool Salvar(Save* save){
     FILE *saves;
-    saves = fopen("saves.bin", "ab+");
+    saves = fopen("saves.txt", "a+");
 
     Save temp;
-    memset(&temp, 0, sizeof(Save));
 
-    while(fread(&temp, sizeof(Save), 1, saves)){
+    char fbuffer[sizeof(Save)];
+
+    fseek(saves, 0, SEEK_END);
+    int fim = ftell(saves);
+    fseek(saves, 0, SEEK_SET);
+
+    while(ftell(saves) != fim){
+
+        for(int i = 0; i < sizeof(Save); i++){
+            fbuffer[i] = fgetc(saves);
+        }
+        memcpy(&temp, fbuffer, sizeof(Save));
+
         if(!strcmp(temp.nome, save->nome)){
             int pos = ftell(saves) - sizeof(Save);
             fclose(saves);
-            saves = fopen("saves.bin", "rb+");
+            saves = fopen("saves.txt", "r+");
             fseek(saves, pos, SEEK_SET);
-            fwrite(save, sizeof(Save), 1, saves);
+
+            memcpy(fbuffer, save, sizeof(Save));
+            for(int i = 0; i < sizeof(Save); i++){
+                fputc(fbuffer[i], saves);
+            }
+
             fclose(saves);
             return true;
         }
     }
-    fwrite(save, sizeof(Save), 1, saves);
+
+    fseek(saves, 0, SEEK_END);
+    memcpy(fbuffer, save, sizeof(Save));
+    for(int i = 0; i < sizeof(Save); i++){
+        fputc(fbuffer[i], saves);
+    }
+
     fclose(saves);
     return true;
 }
 
-bool removerSave(Save* save){
-    FILE *saves = fopen("saves.bin", "rb+");
-
-    Save temp;
-    memset(&temp, 0, sizeof(Save));
-
-    fseek(saves, 0, SEEK_END);
-    int tam = ftell(saves) - sizeof(Save);
-    fseek(saves, 0, SEEK_SET);
-
-    while(fread(&temp, sizeof(Save), 1, saves)){
-        if(!strcmp(temp.nome, save->nome)){
-            if(ftell(saves) - sizeof(Save) == tam){
-                ftruncate(fileno(saves), tam);
-            }
-            else{
-                int pos = ftell(saves) - sizeof(Save);
-
-                fseek(saves, -sizeof(Save), SEEK_END);
-                fread(&temp, sizeof(Save), 1, saves);
-
-                fseek(saves, pos, SEEK_SET);
-                fwrite(&temp, sizeof(Save), 1, saves);
-                ftruncate(fileno(saves), tam);
-                break;
-            }
-            fclose(saves);
-            return true;
-        }
-    }
-    fclose(saves);
-    return false;
-}
-
 Save* resgatarSave(char* nome){
-    FILE* saves = fopen("saves.bin", "rb");
+    FILE* saves = fopen("saves.txt", "r");
 
     Save* save = malloc(sizeof(Save));
-    memset(save, 0, sizeof(Save));
-    while(fread(save, sizeof(Save), 1, saves)){
+
+    char fbuffer[sizeof(Save)];
+
+    fseek(saves, 0, SEEK_END);
+    int fim = ftell(saves);
+    fseek(saves, 0, SEEK_SET);
+
+    while(ftell(saves) != fim){
+
+        for(int i = 0; i < sizeof(Save); i++){
+            fbuffer[i] = fgetc(saves);
+        }
+        memcpy(save, fbuffer, sizeof(Save));
+
         if(!strcmp(save->nome, nome)){
             fclose(saves);
             return save;
@@ -74,7 +74,7 @@ Save* resgatarSave(char* nome){
 }
 
 char* listarSaves(char* usuario){
-    FILE* saves = fopen("saves.bin", "rb");
+    FILE* saves = fopen("saves.txt", "r");
 
     if(saves){
 
@@ -82,10 +82,21 @@ char* listarSaves(char* usuario){
         char* nomes = malloc(sizeof(char));
 
         Save save;
-        memset(&save, 0, sizeof(Save));
+
+        char fbuffer[sizeof(Save)];
+
+        fseek(saves, 0, SEEK_END);
+        int fim = ftell(saves);
+        fseek(saves, 0, SEEK_SET);
 
         nomes[0] = '\0';
-        while(fread(&save, sizeof(Save), 1, saves)){
+        while(ftell(saves) != fim){
+
+            for(int i = 0; i < sizeof(Save); i++){
+                fbuffer[i] = fgetc(saves);
+            }
+            memcpy(&save, fbuffer, sizeof(Save));
+
             if(!strcmp(save.usuario, usuario)){
                 rax += (strlen(save.nome) + 2) * sizeof(char);
                 nomes = realloc(nomes, rax);
