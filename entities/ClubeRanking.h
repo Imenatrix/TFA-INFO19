@@ -11,10 +11,6 @@ typedef struct{
     int derrotas;
     int gp;
     int gc;
-    int sg;
-    double mgp;
-    double mgc;
-    int lastPos;
 
 } ClubeRanking;
 

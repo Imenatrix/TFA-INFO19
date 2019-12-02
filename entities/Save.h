@@ -5,6 +5,7 @@ typedef struct{
 
     char nome[30];
     char usuario[12];
+    int clubeCap;
     int clubeIndex;
     int turnoIndex;
     Turno turnos[2];

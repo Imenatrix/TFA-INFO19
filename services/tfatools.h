@@ -17,6 +17,41 @@ char *fgetstr(char *str, int n, FILE *stream)
 	return str;
 }
 
+int* gerarRodada(int offset, int qt){
+
+    int *chave = malloc(qt * sizeof(int));
+
+    int coiso;
+
+    for(int i = 0; i < qt; i++){
+
+        if(i == 0){
+            chave[i] = i;
+        }
+        else if(i + offset < qt){
+            if(i < qt / 2){
+                chave[i] = i + offset;
+            }
+            else{
+                chave[(qt - 1) - (i - (qt / 2))] = i + offset;
+            }
+            coiso = i;
+        }
+        else{
+            if(i < qt / 2){
+                chave[i] = i - coiso;
+            }
+            else{
+                chave[(qt - 1) - (i - (qt / 2))] = i - coiso;
+            }
+        }
+
+    }
+
+    return chave;
+
+}
+
 //https://www.geeksforgeeks.org/convert-floating-point-number-string/
 
 void reverse(char* str, int len)
